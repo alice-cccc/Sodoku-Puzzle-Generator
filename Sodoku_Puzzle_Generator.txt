@@ -1,0 +1,115 @@
+import java.util.ArrayList;
+
+public class SodokuGenerator {
+
+    public static void main(String[] args) {
+        int[][] board = new int[9][9]; // 2D array
+
+        fillBoard(board);
+        printBoard(board);
+    }
+
+    // Fill the board using backtracking
+    public static boolean fillBoard(int[][] board) {
+
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+
+                if (board[row][col] == 0) {
+
+                    // 1D ArrayList (randomized)
+                    ArrayList<Integer> numbers = getShuffledNumbers();
+
+                    for (int num : numbers) {
+
+                        if (isValid(board, row, col, num)) {
+
+                            board[row][col] = num;
+
+                            if (fillBoard(board)) {
+                                return true;
+                            }
+
+                            // BACKTRACK
+                            board[row][col] = 0;
+                        }
+                    }
+
+                    return false; // no number worked
+                }
+            }
+        }
+
+        return true; // board complete
+    }
+
+    // Manual shuffle using ArrayList
+    public static ArrayList<Integer> getShuffledNumbers() {
+        ArrayList<Integer> nums = new ArrayList<>();
+
+        // fill list 1–9
+        for (int i = 1; i <= 9; i++) {
+            nums.add(i);
+        }
+
+        // Fisher–Yates shuffle
+        for (int i = nums.size() - 1; i > 0; i--) {
+            int j = (int)(Math.random() * (i + 1));
+
+            int temp = nums.get(i);
+            nums.set(i, nums.get(j));
+            nums.set(j, temp);
+        }
+
+        return nums;
+    }
+
+    //Check if a number is valid
+    public static boolean isValid(int[][] board, int row, int col, int num) {
+
+        // check row
+        for (int i = 0; i < 9; i++) {
+            if (board[row][i] == num) return false;
+        }
+
+        // check column
+        for (int i = 0; i < 9; i++) {
+            if (board[i][col] == num) return false;
+        }
+
+        // check 3x3 box
+        int startRow = row - row % 3;
+        int startCol = col - col % 3;
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (board[startRow + i][startCol + j] == num) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    // Print board 
+    public static void printBoard(int[][] board) {
+        for (int i = 0; i < 9; i++) {
+
+            if (i % 3 == 0 && i != 0) {
+                System.out.println("---------------------");
+            }
+
+            for (int j = 0; j < 9; j++) {
+
+                if (j % 3 == 0 && j != 0) {
+                    System.out.print("| ");
+                }
+
+                System.out.print(board[i][j] + " ");
+            }
+
+            System.out.println();
+        }
+    }
+}
